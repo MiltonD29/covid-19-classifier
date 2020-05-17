@@ -10,7 +10,7 @@ from gevent.pywsgi import WSGIServer
 import tensorflow as tf
 from tensorflow import keras
 
-from tensorflow.keras.applications.imagenet_utils import preprocess_input, decode_predictions
+from keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 
@@ -25,33 +25,34 @@ app = Flask(__name__)
 
 # You can use pretrained model from Keras
 # Check https://keras.io/applications/
-from keras.applications.mobilenet_v2 import MobileNetV2
-model = MobileNetV2(weights='imagenet')
+# from keras.applications.mobilenet_v2 import MobileNetV2
+# model = MobileNetV2(weights='imagenet')
 
-print('Model loaded. Check http://127.0.0.1:5000/')
+# print('Model loaded. Check http://127.0.0.1:5000/')
 
 
 # Model saved with Keras model.save()
-MODEL_PATH = 'models/your_model.h5'
+MODEL_PATH = 'models/covid_attn_weights_best_vgg16.h5'
 
 # Load your own trained model
-# model = load_model(MODEL_PATH)
-# model._make_predict_function()          # Necessary
-# print('Model loaded. Start serving...')
+model = load_model(MODEL_PATH)
+model._make_predict_function()          # Necessary
+print('Model loaded. Start serving...')
 
 
 def model_predict(img, model):
-    img = img.resize((224, 224))
+    img = img.resize((150, 150))
 
     # Preprocessing the image
     x = image.img_to_array(img)
-    # x = np.true_divide(x, 255)
+    #x = np.true_divide(x, 255.0)
+    #x = x/255.
     x = np.expand_dims(x, axis=0)
-
+    print(x.shape)
     # Be careful how your trained model deals with the input
     # otherwise, it won't make correct prediction!
     x = preprocess_input(x, mode='tf')
-
+    #print(x.shape)
     preds = model.predict(x)
     return preds
 
@@ -65,20 +66,30 @@ def index():
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'POST':
+        #print(request.json)
         # Get the image from post request
         img = base64_to_pil(request.json)
-
+        #print(img)
         # Save the image to ./uploads
         # img.save("./uploads/image.png")
 
         # Make prediction
         preds = model_predict(img, model)
-
+        print(preds)
+        pred_class = np.argmax(preds)
         # Process your result for human
         pred_proba = "{:.3f}".format(np.amax(preds))    # Max probability
-        pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
+        #pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
 
-        result = str(pred_class[0][0][1])               # Convert to string
+        #result = str(pred_class[0][0][1])               # Convert to string
+        print(pred_class)
+        if pred_class == 0:
+            result = 'COVID-19'
+        elif pred_class == 1:
+            result = 'NORMAL'
+        elif pred_class == 2:
+            result = 'NEUMONÍA'
+
         result = result.replace('_', ' ').capitalize()
         
         # Serialize the result, you can add additional fields

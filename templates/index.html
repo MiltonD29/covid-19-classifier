@@ -1,31 +1,47 @@
 {% extends "base.html" %} {% block content %}
 
-<div class="main">
-  <div class="title">
-    <h3>Image Classifier</h3>
-    <!-- <p>
-      <small>A web app demo</small>
-    </p> -->
-  </div>
+<div class="covid">
+  <div class="container-covid">
+    <div class="row w-100">
+      <div class="col-md-6">
+        <form class="covid-form validate-form container">
+          <span class="covid-form-title">
+            Prueba COVID-19
+          </span>
+          <div class="panel">
+            <input id="file-upload" class="hidden" type="file" accept="image/x-png,image/gif,image/jpeg" />
+            <label for="file-upload" id="file-drag" class="upload-box">
+              <div id="upload-caption">Suelta la imagen aquí o haz clic para seleccionar</div>
+              <img id="image-preview" class="hidden" />
+            </label>
+          </div>
 
-  <div class="panel">
-    <input id="file-upload" class="hidden" type="file" accept="image/x-png,image/gif,image/jpeg" />
-    <label for="file-upload" id="file-drag" class="upload-box">
-      <div id="upload-caption">Drop image here or click to select</div>
-      <img id="image-preview" class="hidden" />
-    </label>
-  </div>
-  <div style="margin-bottom: 2rem;">
-    <input type="button" value="Submit" class="button" onclick="submitImage();" />
-    <input type="button" value="Clear" class="button" onclick="clearImage();" />
-  </div>
-
-  <div id="image-box">
-    <img id="image-display" />
-    <div id="pred-result" class="hidden"></div>
-    <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
-      <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
-    </svg>
+          <div class="container-covid-form-btn">
+            <button class="covid-form-btn-clear" onclick="clearImage(event);">
+              <span>
+                Limpiar
+                <i class="fa fa-times" aria-hidden="true"></i>
+              </span>
+            </button>
+            <button class="covid-form-btn" onclick="submitImage(event);">
+              <span>
+                Enviar
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <div class="covid-pic">
+          <img id="image-display" />
+          <div id="pred-result" class="hidden"></div>
+          <svg id="loader" class="hidden" viewBox="0 0 32 32" width="32" height="32">
+            <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
