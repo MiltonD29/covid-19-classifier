@@ -42,9 +42,8 @@ var loader = document.getElementById("loader");
 // Main button events
 //========================================================================
 
-function submitImage() {
-  // action for the submit button
-  console.log("submit");
+function submitImage(event) {
+  event.preventDefault()
 
   if (!imageDisplay.src || !imageDisplay.src.startsWith("data")) {
     window.alert("Please select an image before submit.");
@@ -58,7 +57,8 @@ function submitImage() {
   predictImage(imageDisplay.src);
 }
 
-function clearImage() {
+function clearImage(event) {
+  event.preventDefault()
   // reset selected files
   fileSelect.value = "";
 
@@ -132,7 +132,7 @@ function displayResult(data) {
   // display the result
   // imageDisplay.classList.remove("loading");
   hide(loader);
-  predResult.innerHTML = data.result;
+  predResult.innerHTML = parseFloat(data.probability) * 100 + '%' + ' ' + data.result;
   show(predResult);
 }
 
